@@ -66,7 +66,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "cn.y"
+#line 1 "src/cn.y"
 
 
 #include <stdio.h>
@@ -92,7 +92,7 @@ void addBrackets();
 int parse(char *finpath);
 
 
-#line 96 "cn.tab.c"
+#line 96 "src/cn.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -116,8 +116,8 @@ int parse(char *finpath);
 
 /* Use api.header.include to #include this header
    instead of duplicating it here.  */
-#ifndef YY_YY_CN_TAB_H_INCLUDED
-# define YY_YY_CN_TAB_H_INCLUDED
+#ifndef YY_YY_SRC_CN_TAB_H_INCLUDED
+# define YY_YY_SRC_CN_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -142,12 +142,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "cn.y"
+#line 27 "src/cn.y"
 
     int ival;
     char *sval;
 
-#line 151 "cn.tab.c"
+#line 151 "src/cn.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -160,7 +160,7 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_CN_TAB_H_INCLUDED  */
+#endif /* !YY_YY_SRC_CN_TAB_H_INCLUDED  */
 
 
 
@@ -1232,49 +1232,49 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 45 "cn.y"
+#line 45 "src/cn.y"
     { }
-#line 1238 "cn.tab.c"
+#line 1238 "src/cn.tab.c"
     break;
 
   case 4:
-#line 49 "cn.y"
+#line 49 "src/cn.y"
     { fprintf(fout, "\n"); }
-#line 1244 "cn.tab.c"
+#line 1244 "src/cn.tab.c"
     break;
 
   case 5:
-#line 50 "cn.y"
+#line 50 "src/cn.y"
     { fprintf(fout, "%s\n", (yyvsp[-1].sval)); free((yyvsp[-1].sval)); }
-#line 1250 "cn.tab.c"
+#line 1250 "src/cn.tab.c"
     break;
 
   case 6:
-#line 54 "cn.y"
+#line 54 "src/cn.y"
     { addBrackets(0); (yyval.sval) = (yyvsp[0].sval); }
-#line 1256 "cn.tab.c"
+#line 1256 "src/cn.tab.c"
     break;
 
   case 7:
-#line 55 "cn.y"
+#line 55 "src/cn.y"
     { addBrackets((yyvsp[-1].ival)); (yyval.sval) = (yyvsp[0].sval); }
-#line 1262 "cn.tab.c"
+#line 1262 "src/cn.tab.c"
     break;
 
   case 8:
-#line 58 "cn.y"
+#line 58 "src/cn.y"
     { (yyval.ival) = 1; }
-#line 1268 "cn.tab.c"
+#line 1268 "src/cn.tab.c"
     break;
 
   case 9:
-#line 59 "cn.y"
+#line 59 "src/cn.y"
     { (yyval.ival) = (yyvsp[-1].ival) + 1; }
-#line 1274 "cn.tab.c"
+#line 1274 "src/cn.tab.c"
     break;
 
 
-#line 1278 "cn.tab.c"
+#line 1278 "src/cn.tab.c"
 
       default: break;
     }
@@ -1506,7 +1506,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 62 "cn.y"
+#line 62 "src/cn.y"
 
 
 void addBrackets(int indentCurr)

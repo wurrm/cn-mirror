@@ -1,5 +1,6 @@
+#line 1 "src/lex.yy.c"
 
-#line 2 "lex.yy.c"
+#line 3 "src/lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -370,7 +371,7 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    1,    1,    4,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    4,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    4,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    4,    4,    4,    4,    4,    4,
@@ -440,16 +441,16 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "cn.l"
-#line 2 "cn.l"
+#line 1 "src/cn.l"
+#line 2 "src/cn.l"
 
 #include <stdio.h>
 #include <string.h>
 
 #include "cn.tab.h"
 
-#line 451 "lex.yy.c"
-#line 452 "lex.yy.c"
+#line 452 "src/lex.yy.c"
+#line 453 "src/lex.yy.c"
 
 #define INITIAL 0
 
@@ -669,10 +670,10 @@ YY_DECL
 		}
 
 	{
-#line 10 "cn.l"
+#line 10 "src/cn.l"
 
 
-#line 675 "lex.yy.c"
+#line 676 "src/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -732,14 +733,14 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 12 "cn.l"
+#line 12 "src/cn.l"
 { // For simplicity, only tabs are currently supported.
                     return START_INDENT;
                 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "cn.l"
+#line 15 "src/cn.l"
 {
                     return INDENT;
                 }
@@ -747,14 +748,14 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 18 "cn.l"
+#line 18 "src/cn.l"
 {
                     return NL;
                 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 21 "cn.l"
+#line 21 "src/cn.l"
 { // This regex is a temporary simplification.
                     yylval.sval = strdup(yytext); // Will be free()d by bison.
                     return STATEMENT;
@@ -762,10 +763,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 26 "cn.l"
+#line 26 "src/cn.l"
 ECHO;
 	YY_BREAK
-#line 768 "lex.yy.c"
+#line 769 "src/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1773,6 +1774,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 26 "cn.l"
+#line 26 "src/cn.l"
 
 
