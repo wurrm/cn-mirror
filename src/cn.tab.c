@@ -85,6 +85,7 @@ void yyerror(const char *s);
 // Required Globals
 FILE *fout;
 
+int indentBlockDepth = 0; // How many indents are in a block for this file.
 int indentPrev = 0;
 
 // Function Definitions
@@ -92,7 +93,7 @@ void addBrackets();
 int parse(char *finpath);
 
 
-#line 96 "src/cn.tab.c"
+#line 97 "src/cn.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -142,12 +143,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "src/cn.y"
+#line 28 "src/cn.y"
 
     int ival;
     char *sval;
 
-#line 151 "src/cn.tab.c"
+#line 152 "src/cn.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -453,7 +454,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    44,    44,    45,    49,    50,    54,    55,    58,    59
+       0,    45,    45,    46,    50,    51,    55,    56,    59,    60
 };
 #endif
 
@@ -1232,49 +1233,49 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 45 "src/cn.y"
+#line 46 "src/cn.y"
     { }
-#line 1238 "src/cn.tab.c"
+#line 1239 "src/cn.tab.c"
     break;
 
   case 4:
-#line 49 "src/cn.y"
+#line 50 "src/cn.y"
     { fprintf(fout, "\n"); }
-#line 1244 "src/cn.tab.c"
+#line 1245 "src/cn.tab.c"
     break;
 
   case 5:
-#line 50 "src/cn.y"
+#line 51 "src/cn.y"
     { fprintf(fout, "%s\n", (yyvsp[-1].sval)); free((yyvsp[-1].sval)); }
-#line 1250 "src/cn.tab.c"
+#line 1251 "src/cn.tab.c"
     break;
 
   case 6:
-#line 54 "src/cn.y"
+#line 55 "src/cn.y"
     { addBrackets(0); (yyval.sval) = (yyvsp[0].sval); }
-#line 1256 "src/cn.tab.c"
+#line 1257 "src/cn.tab.c"
     break;
 
   case 7:
-#line 55 "src/cn.y"
+#line 56 "src/cn.y"
     { addBrackets((yyvsp[-1].ival)); (yyval.sval) = (yyvsp[0].sval); }
-#line 1262 "src/cn.tab.c"
+#line 1263 "src/cn.tab.c"
     break;
 
   case 8:
-#line 58 "src/cn.y"
+#line 59 "src/cn.y"
     { (yyval.ival) = 1; }
-#line 1268 "src/cn.tab.c"
+#line 1269 "src/cn.tab.c"
     break;
 
   case 9:
-#line 59 "src/cn.y"
+#line 60 "src/cn.y"
     { (yyval.ival) = (yyvsp[-1].ival) + 1; }
-#line 1274 "src/cn.tab.c"
+#line 1275 "src/cn.tab.c"
     break;
 
 
-#line 1278 "src/cn.tab.c"
+#line 1279 "src/cn.tab.c"
 
       default: break;
     }
@@ -1506,11 +1507,29 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 62 "src/cn.y"
+#line 63 "src/cn.y"
 
 
 void addBrackets(int indentCurr)
 {
+    if (indentCurr != 0)
+    {
+        if (indentBlockDepth == 0)
+        {
+            indentBlockDepth = indentCurr;
+        }
+
+        if (indentCurr % indentBlockDepth != 0)
+        {
+            // TODO Good error message.
+            // Perhaps now is a good time to start counting lns too?
+            yyerror("Bad indentation");
+        }
+
+        //indentCurr = (int)(indentCurr / indentBlockDepth);
+        indentCurr /= indentBlockDepth;
+    }
+
     int indentDiff = indentCurr - indentPrev;
 
     if (indentDiff > 0)

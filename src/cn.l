@@ -9,10 +9,10 @@
 
 %%
 
-^[\t]           { // For simplicity, only tabs are currently supported.
+^[ \t]          { // For simplicity, only tabs are currently supported.
                     return START_INDENT;
                 }
-[\t]            {
+[ \t]           {
                     return INDENT;
                 }
 \n              {
