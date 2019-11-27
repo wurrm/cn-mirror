@@ -16,6 +16,7 @@ void yyerror(const char *s);
 // Required Globals
 FILE *fout;
 
+int indentBlockDepth = 0; // How many indents are in a block for this file.
 int indentPrev = 0;
 
 // Function Definitions
@@ -63,6 +64,23 @@ line_indent:
 
 void addBrackets(int indentCurr)
 {
+    if (indentCurr != 0)
+    {
+        if (indentBlockDepth == 0)
+        {
+            indentBlockDepth = indentCurr;
+        }
+
+        if (indentCurr % indentBlockDepth != 0)
+        {
+            // TODO Good error message.
+            // Perhaps now is a good time to start counting lns too?
+            yyerror("Bad indentation");
+        }
+
+        indentCurr /= indentBlockDepth;
+    }
+
     int indentDiff = indentCurr - indentPrev;
 
     if (indentDiff > 0)
@@ -78,12 +96,6 @@ void addBrackets(int indentCurr)
         {
             fprintf(fout, "};");
         }
-    }
-
-    // Print tabs just to make output look prettier.
-    for (int i = 0; i < indentCurr; ++i)
-    {
-        fprintf(fout, "\t");
     }
 
     indentPrev = indentCurr;

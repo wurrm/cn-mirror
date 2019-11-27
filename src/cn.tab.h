@@ -60,7 +60,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "src/cn.y"
+#line 28 "src/cn.y"
 
     int ival;
     char *sval;
