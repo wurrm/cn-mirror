@@ -78,7 +78,6 @@ void addBrackets(int indentCurr)
             yyerror("Bad indentation");
         }
 
-        //indentCurr = (int)(indentCurr / indentBlockDepth);
         indentCurr /= indentBlockDepth;
     }
 
@@ -97,12 +96,6 @@ void addBrackets(int indentCurr)
         {
             fprintf(fout, "};");
         }
-    }
-
-    // Print tabs just to make output look prettier.
-    for (int i = 0; i < indentCurr; ++i)
-    {
-        fprintf(fout, "\t");
     }
 
     indentPrev = indentCurr;

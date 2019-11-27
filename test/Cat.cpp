@@ -1,25 +1,25 @@
 #include <iostream>
 
 class Cat
-{	private:
+{private:
 
-	int age;
-	int legs;
+int age;
+int legs;
 
-	public:
+public:
 
-	Cat(int age, int legs = 4)
-{		this->age = age;
-		this->legs = legs;
+Cat(int age, int legs = 4)
+{this->age = age;
+this->legs = legs;
 
-};	void speak(int x)
-{		for (int i = 0; i < x; i++)
-{			std::cout << "meow\n";
+};void speak(int x)
+{for (int i = 0; i < x; i++)
+{std::cout << "meow\n";
 
-};};	int getAge()
-{		return this->age;
+};};int getAge()
+{return this->age;
 
 };};int main()
-{	Cat purrcival = Cat(6);
-	purrcival.speak(2);
+{Cat purrcival = Cat(6);
+purrcival.speak(2);
 };
