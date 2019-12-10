@@ -1,4 +1,6 @@
 %{
+// C++ BNF: https://www.nongnu.org/hcb/
+// C++11 (and more) maintained grammars: http://slebok.github.io/zoo/index.html#cpp_cpp11
 
 #include <stdio.h>
 #include <string.h>
