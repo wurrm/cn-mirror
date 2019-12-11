@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cn.tab.h"
+#include "y.tab.h"
 
 %}
 
