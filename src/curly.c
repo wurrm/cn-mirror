@@ -29,7 +29,12 @@ void addBrackets(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentP
             fprintf(fout, "{");
         }
     }
-    else if (indentDiff < 0)
+    else
+    {
+	fprintf(fout, ";");
+    }
+
+    if (indentDiff < 0)
     {
         for (int i = 0; i < -indentDiff; ++i)
         {

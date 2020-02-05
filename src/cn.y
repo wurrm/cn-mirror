@@ -36,7 +36,9 @@ int parse(char *finpath);
 %token NL
 %token START_INDENT
 %token INDENT
-%token <sval> STATEMENT
+
+%token <sval> MACRO
+%token <sval> EXPR
 
 %type <ival> line_indent
 %type <sval> codeline
@@ -55,11 +57,14 @@ line:
 ;
 
 codeline:
-        STATEMENT               {
+        MACRO                   {
+                                    $$ = $1;
+                                }
+        | EXPR                  {
                                     addBrackets(fout, 0, &indentBlockDepth, &indentPrev);
                                     $$ = $1;
                                 }
-        | line_indent STATEMENT {
+        | line_indent EXPR      {
                                     addBrackets(fout, $1, &indentBlockDepth, &indentPrev);
                                     $$ = $2;
                                 }
