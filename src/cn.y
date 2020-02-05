@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "curly.h"
+
+// TODO This feels clumsy. How do others do this?
 #define MAX_PATH 4096
 
 // Flex Definitions
@@ -14,12 +17,13 @@ extern FILE *yyin;
 void yyerror(const char *s);
 
 // Required Globals
+// TODO Surely there's a nicer of getting things to yyparse? Check the docs.
 FILE *fout;
 
+int indentBlockDepth = 0;
 int indentPrev = 0;
 
 // Function Definitions
-void addBrackets();
 int parse(char *finpath);
 
 %}
@@ -51,8 +55,14 @@ line:
 ;
 
 codeline:
-        STATEMENT               { addBrackets(0); $$ = $1; }
-        | line_indent STATEMENT { addBrackets($1); $$ = $2; }
+        STATEMENT               {
+                                    addBrackets(fout, 0, &indentBlockDepth, &indentPrev);
+                                    $$ = $1;
+                                }
+        | line_indent STATEMENT {
+                                    addBrackets(fout, $1, &indentBlockDepth, &indentPrev);
+                                    $$ = $2;
+                                }
 
 line_indent:
         START_INDENT            { $$ = 1; }
@@ -60,34 +70,6 @@ line_indent:
 ;
 
 %%
-
-void addBrackets(int indentCurr)
-{
-    int indentDiff = indentCurr - indentPrev;
-
-    if (indentDiff > 0)
-    {
-        for (int i = 0; i < indentDiff; ++i)
-        {
-            fprintf(fout, "{");
-        }
-    }
-    else if (indentDiff < 0)
-    {
-        for (int i = 0; i < -indentDiff; ++i)
-        {
-            fprintf(fout, "};");
-        }
-    }
-
-    // Print tabs just to make output look prettier.
-    for (int i = 0; i < indentCurr; ++i)
-    {
-        fprintf(fout, "\t");
-    }
-
-    indentPrev = indentCurr;
-}
 
 int parse(char filepath[MAX_PATH])
 {
@@ -110,7 +92,7 @@ int parse(char filepath[MAX_PATH])
     {
         yyparse();
     } while(!feof(yyin));
-    addBrackets(0); // Close any open brackets.
+    addBrackets(fout, 0, &indentBlockDepth, &indentPrev); // Close any open brackets.
 
     fclose(fin);
     fclose(fout);
