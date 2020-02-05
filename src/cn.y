@@ -61,11 +61,11 @@ codeline:
                                     $$ = $1;
                                 }
         | EXPR                  {
-                                    addBrackets(fout, 0, &indentBlockDepth, &indentPrev);
+                                    addBracketsAndSemicolons(fout, 0, &indentBlockDepth, &indentPrev);
                                     $$ = $1;
                                 }
         | line_indent EXPR      {
-                                    addBrackets(fout, $1, &indentBlockDepth, &indentPrev);
+                                    addBracketsAndSemicolons(fout, $1, &indentBlockDepth, &indentPrev);
                                     $$ = $2;
                                 }
 
@@ -97,7 +97,7 @@ int parse(char filepath[MAX_PATH])
     {
         yyparse();
     } while(!feof(yyin));
-    addBrackets(fout, 0, &indentBlockDepth, &indentPrev); // Close any open brackets.
+    addBracketsAndSemicolons(fout, 0, &indentBlockDepth, &indentPrev); // Close any open brackets.
 
     fclose(fin);
     fclose(fout);

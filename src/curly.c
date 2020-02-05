@@ -1,6 +1,6 @@
 #include "curly.h"
 
-void addBrackets(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev)
+void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev)
 {
     // TODO Fail if nullptrs
     if (indentCurr != 0)
