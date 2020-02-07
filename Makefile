@@ -5,7 +5,8 @@ YACC := bison
 SRCDIR := src
 BUILDDIR := build
 TESTDIR := test
-TARGET := bin/$(NAME)
+BINDIR := bin
+TARGET := $(BINDIR)/$(NAME)
 
 SRCEXT := c
 SOURCES := $(shell find $(SRCDIR) -type f -name "*.$(SRCEXT)")
@@ -17,6 +18,7 @@ LEXFLAGS := -v
 INC := -I include
 
 $(TARGET): $(OBJECTS) $(BUILDDIR)/y.tab.c $(BUILDDIR)/lex.yy.c
+	@mkdir -p $(BINDIR)
 	$(CC) $^ -o $(TARGET) $(INC) $(LIB)
 
 $(BUILDDIR)/lex.yy.c: $(SRCDIR)/$(NAME).l
