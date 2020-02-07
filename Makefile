@@ -32,10 +32,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
-.PHONY: clean tests run
-
-run:
-	$(TARGET)
+.PHONY: clean tests
 
 clean:
 	$(RM) -r $(BUILDDIR) $(TARGET)
