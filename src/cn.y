@@ -24,6 +24,7 @@ int indentBlockDepth = 0;
 int indentPrev = 0;
 
 // Function Definitions
+void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev);
 int parse(char *finpath);
 
 %}
@@ -101,6 +102,17 @@ int parse(char filepath[MAX_PATH])
 
     fclose(fin);
     fclose(fout);
+}
+
+void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev)
+{
+    int err = _addBracketsAndSemicolons(fout, indentCurr, indentBlockDepth, indentPrev);
+
+    if (err == 1)
+    {
+        // TODO Perhaps now is a good time to start counting lns too?
+        yyerror("Inconsistent indentation block width");
+    }
 }
 
 int main(int argc, char **argv)
