@@ -20,9 +20,13 @@
 \n              {
                     return NL;
                 }
-[A-Za-z#\/].+   { // This regex is a temporary simplification.
+#.+             {
                     yylval.sval = strdup(yytext); // Will be free()d by bison.
-                    return STATEMENT;
+                    return MACRO;
+                }
+[A-Za-z\/].+    { // This regex is a temporary simplification.
+                    yylval.sval = strdup(yytext); // Will be free()d by bison.
+                    return EXPR;
                 }
 
 %%

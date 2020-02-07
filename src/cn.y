@@ -36,7 +36,9 @@ int parse(char *finpath);
 %token NL
 %token START_INDENT
 %token INDENT
-%token <sval> STATEMENT
+
+%token <sval> MACRO
+%token <sval> EXPR
 
 %type <ival> line_indent
 %type <sval> codeline
@@ -55,12 +57,15 @@ line:
 ;
 
 codeline:
-        STATEMENT               {
-                                    addBrackets(fout, 0, &indentBlockDepth, &indentPrev);
+        MACRO                   {
                                     $$ = $1;
                                 }
-        | line_indent STATEMENT {
-                                    addBrackets(fout, $1, &indentBlockDepth, &indentPrev);
+        | EXPR                  {
+                                    addBracketsAndSemicolons(fout, 0, &indentBlockDepth, &indentPrev);
+                                    $$ = $1;
+                                }
+        | line_indent EXPR      {
+                                    addBracketsAndSemicolons(fout, $1, &indentBlockDepth, &indentPrev);
                                     $$ = $2;
                                 }
 
@@ -92,7 +97,7 @@ int parse(char filepath[MAX_PATH])
     {
         yyparse();
     } while(!feof(yyin));
-    addBrackets(fout, 0, &indentBlockDepth, &indentPrev); // Close any open brackets.
+    addBracketsAndSemicolons(fout, 0, &indentBlockDepth, &indentPrev); // Close any open brackets.
 
     fclose(fin);
     fclose(fout);
