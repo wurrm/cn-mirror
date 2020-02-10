@@ -1,6 +1,7 @@
-#include <iostream>
+#include "Cat.hpp"
 
-;class Cat
+
+class Cat
 {private:
 
 ;int age
@@ -19,7 +20,8 @@
 ;};};int getAge()
 {return this->age
 
-;};};int main()
+;};};
+int main()
 {Cat purrcival = Cat(6)
 ;purrcival.speak(2)
 ;};

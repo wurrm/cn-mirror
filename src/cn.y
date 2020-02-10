@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+#include <libgen.h>
 
 #include "curly.h"
 
@@ -18,10 +21,16 @@ void yyerror(const char *s);
 
 // Required Globals
 // TODO Surely there's a nicer of getting things to yyparse? Check the docs.
-FILE *fout;
+FILE *fcpp;
+FILE *fhpp;
+
+bool inClass = false;
 
 int indentBlockDepth = 0;
 int indentPrev = 0;
+int indentFloor = 0;
+
+char prevExpr[100];
 
 // Function Definitions
 void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev);
@@ -53,20 +62,68 @@ codefile:
 ;
 
 line:
-        NL                      { fprintf(fout, "\n"); }
-        | codeline NL           { fprintf(fout, "%s\n", $1); free($1); }
+        NL                      {
+                                    fprintf(fhpp, "\n");
+                                    fprintf(fcpp, "\n");
+                                }
+        | codeline NL           {
+                                    free($1);
+                                    fprintf(fhpp, "\n");
+                                    fprintf(fcpp, "\n");
+                                }
 ;
 
 codeline:
         MACRO                   {
+                                    // TODO Implement syntax match logic for line_indent MACRO
+                                    fprintf(fhpp, "%s", $1);
                                     $$ = $1;
                                 }
         | EXPR                  {
-                                    addBracketsAndSemicolons(fout, 0, &indentBlockDepth, &indentPrev);
+                                    // TODO Put this into a function goddammit.
+                                    if (indentPrev > 0)
+                                    {
+                                        addBracketsAndSemicolons(fcpp, indentFloor, &indentBlockDepth, &indentPrev);
+                                    }
+
+                                    indentFloor = 0;
+
+                                    addBracketsAndSemicolons(fhpp, 0, &indentBlockDepth, &indentPrev);
+                                    fprintf(fhpp, "%s", $1);
+
+                                    // TODO strcpy is not necessarily safe.
+                                    strcpy(prevExpr, $1);
+
                                     $$ = $1;
                                 }
         | line_indent EXPR      {
-                                    addBracketsAndSemicolons(fout, $1, &indentBlockDepth, &indentPrev);
+                                    if ($1 > indentFloor)
+                                    {
+                                        if (indentPrev == indentFloor)
+                                        {
+                                            // If move above floor, write previous and new expr to cpp.
+                                            fprintf(fcpp, "%s\n", prevExpr); // TODO already printed a NL, move back one or delete it for gdb hack.
+                                        }
+                                        addBracketsAndSemicolons(fcpp, $1, &indentBlockDepth, &indentPrev);
+                                        fprintf(fcpp, "%s", $2);
+                                    }
+                                    else
+                                    {
+                                        if (indentPrev > indentFloor)
+                                        {
+                                            // If move below floor, close remaining brackets in implementation.
+                                            addBracketsAndSemicolons(fcpp, indentFloor, &indentBlockDepth, &indentPrev);
+                                        }
+
+                                        indentFloor = $1;
+
+                                        addBracketsAndSemicolons(fhpp, $1, &indentBlockDepth, &indentPrev);
+                                        fprintf(fhpp, "%s", $2);
+                                    }
+
+                                    // TODO strcpy is not necessarily safe.
+                                    strcpy(prevExpr, $2);
+
                                     $$ = $2;
                                 }
 
@@ -89,24 +146,33 @@ int parse(char filepath[MAX_PATH])
 
     // We make some assumptions about filepath here.
     // It would be better to write a function that handles path conversion in more detail.
+    // TODO Do this properly.
     char *pch;
     pch = strstr(filepath, ".cn");
     strncpy(pch, ".cpp\0", 5);
-    fout = fopen(filepath, "w+");
+    fcpp = fopen(filepath, "w+");
+    pch = strstr(filepath, ".cpp");
+    strncpy(pch, ".hpp\0", 5);
+    fhpp = fopen(filepath, "w+");
+
+    fprintf(fcpp, "#include \"%s\"", basename(filepath));
 
     do
     {
         yyparse();
     } while(!feof(yyin));
-    addBracketsAndSemicolons(fout, 0, &indentBlockDepth, &indentPrev); // Close any open brackets.
+    // Close any open brackets.
+    addBracketsAndSemicolons(fcpp, indentFloor, &indentBlockDepth, &indentPrev);
+    addBracketsAndSemicolons(fhpp, 0, &indentBlockDepth, &indentPrev);
 
     fclose(fin);
-    fclose(fout);
+    fclose(fhpp);
+    fclose(fcpp);
 }
 
-void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev)
+void addBracketsAndSemicolons(FILE *fcpp, int indentCurr, int *indentBlockDepth, int *indentPrev)
 {
-    int err = _addBracketsAndSemicolons(fout, indentCurr, indentBlockDepth, indentPrev);
+    int err = _addBracketsAndSemicolons(fcpp, indentCurr, indentBlockDepth, indentPrev);
 
     if (err == 1)
     {
