@@ -84,7 +84,6 @@ codeline:
                                         addBracketsAndSemicolons(fcpp, indentFloor, indentBlockDepth, &indentPrev);
                                     }
 
-
                                     indentFloor = 0;
 
                                     addBracketsAndSemicolons(fhpp, 0, indentBlockDepth, &indentPrev);
@@ -95,8 +94,8 @@ codeline:
 
                                     if (strncmp($1, "class", 5) == 0)
                                     {
-                                        // TODO Spaces!
-                                        indentFloor += 1;
+                                        // Temporarily increment by only 1 until we know indent depth.
+                                        indentFloor += (indentBlockDepth) ? indentBlockDepth : 1;
                                     }
 
                                     $$ = $1;
@@ -105,6 +104,7 @@ codeline:
                                     if (indentBlockDepth == 0)
                                     {
                                         indentBlockDepth = $1;
+                                        indentFloor *= indentBlockDepth;
                                     }
 
                                     if ($1 > indentFloor)
@@ -112,6 +112,8 @@ codeline:
                                         if (indentPrev == indentFloor)
                                         {
                                             // If move above floor, write previous and new expr to cpp.
+                                            // TODO If we need declaration to cpp, if in a class we need to add class name, and we need to remove default values etc.
+                                            //      This will probably require a sub-parser for top level declarations.
                                             fprintf(fcpp, "%s\n", prevExpr); // TODO already printed a NL, move back one or delete it for gdb hack.
                                         }
                                         addBracketsAndSemicolons(fcpp, $1, indentBlockDepth, &indentPrev);
@@ -137,7 +139,7 @@ codeline:
                                     if (strncmp($2, "class", 5) == 0)
                                     {
                                         // TODO Spaces!
-                                        indentFloor += 1;
+                                        indentFloor += indentBlockDepth;
                                     }
 
                                     $$ = $2;

@@ -2,6 +2,9 @@
 
 int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, int *indentPrev)
 {
+    int tempPrev = (indentBlockDepth) ? *indentPrev / indentBlockDepth : 0;
+    int tempCurr = (indentBlockDepth) ? indentCurr / indentBlockDepth : 0;
+
     // TODO Fail if nullptrs
     if (indentCurr != 0)
     {
@@ -9,11 +12,9 @@ int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, 
         {
 	    return 1;
         }
-
-	indentCurr /= indentBlockDepth;
     }
 
-    int indentDiff = indentCurr - *indentPrev;
+    int indentDiff = tempCurr - tempPrev;
 
     if (indentDiff > 0)
     {
