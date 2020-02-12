@@ -24,8 +24,6 @@ void yyerror(const char *s);
 FILE *fcpp;
 FILE *fhpp;
 
-bool inClass = false;
-
 int indentBlockDepth = 0;
 int indentPrev = 0;
 int indentFloor = 0;
@@ -33,7 +31,7 @@ int indentFloor = 0;
 char prevExpr[100];
 
 // Function Definitions
-void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev);
+void addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, int *indentPrev);
 int parse(char *finpath);
 
 %}
@@ -83,20 +81,32 @@ codeline:
                                     // TODO Put this into a function goddammit.
                                     if (indentPrev > 0)
                                     {
-                                        addBracketsAndSemicolons(fcpp, indentFloor, &indentBlockDepth, &indentPrev);
+                                        addBracketsAndSemicolons(fcpp, indentFloor, indentBlockDepth, &indentPrev);
                                     }
+
 
                                     indentFloor = 0;
 
-                                    addBracketsAndSemicolons(fhpp, 0, &indentBlockDepth, &indentPrev);
+                                    addBracketsAndSemicolons(fhpp, 0, indentBlockDepth, &indentPrev);
                                     fprintf(fhpp, "%s", $1);
 
                                     // TODO strcpy is not necessarily safe.
                                     strcpy(prevExpr, $1);
 
+                                    if (strncmp($1, "class", 5) == 0)
+                                    {
+                                        // TODO Spaces!
+                                        indentFloor += 1;
+                                    }
+
                                     $$ = $1;
                                 }
         | line_indent EXPR      {
+                                    if (indentBlockDepth == 0)
+                                    {
+                                        indentBlockDepth = $1;
+                                    }
+
                                     if ($1 > indentFloor)
                                     {
                                         if (indentPrev == indentFloor)
@@ -104,7 +114,7 @@ codeline:
                                             // If move above floor, write previous and new expr to cpp.
                                             fprintf(fcpp, "%s\n", prevExpr); // TODO already printed a NL, move back one or delete it for gdb hack.
                                         }
-                                        addBracketsAndSemicolons(fcpp, $1, &indentBlockDepth, &indentPrev);
+                                        addBracketsAndSemicolons(fcpp, $1, indentBlockDepth, &indentPrev);
                                         fprintf(fcpp, "%s", $2);
                                     }
                                     else
@@ -112,17 +122,23 @@ codeline:
                                         if (indentPrev > indentFloor)
                                         {
                                             // If move below floor, close remaining brackets in implementation.
-                                            addBracketsAndSemicolons(fcpp, indentFloor, &indentBlockDepth, &indentPrev);
+                                            addBracketsAndSemicolons(fcpp, indentFloor, indentBlockDepth, &indentPrev);
                                         }
 
                                         indentFloor = $1;
 
-                                        addBracketsAndSemicolons(fhpp, $1, &indentBlockDepth, &indentPrev);
+                                        addBracketsAndSemicolons(fhpp, $1, indentBlockDepth, &indentPrev);
                                         fprintf(fhpp, "%s", $2);
                                     }
 
                                     // TODO strcpy is not necessarily safe.
                                     strcpy(prevExpr, $2);
+
+                                    if (strncmp($2, "class", 5) == 0)
+                                    {
+                                        // TODO Spaces!
+                                        indentFloor += 1;
+                                    }
 
                                     $$ = $2;
                                 }
@@ -162,15 +178,15 @@ int parse(char filepath[MAX_PATH])
         yyparse();
     } while(!feof(yyin));
     // Close any open brackets.
-    addBracketsAndSemicolons(fcpp, indentFloor, &indentBlockDepth, &indentPrev);
-    addBracketsAndSemicolons(fhpp, 0, &indentBlockDepth, &indentPrev);
+    addBracketsAndSemicolons(fcpp, indentFloor, indentBlockDepth, &indentPrev);
+    addBracketsAndSemicolons(fhpp, 0, indentBlockDepth, &indentPrev);
 
     fclose(fin);
     fclose(fhpp);
     fclose(fcpp);
 }
 
-void addBracketsAndSemicolons(FILE *fcpp, int indentCurr, int *indentBlockDepth, int *indentPrev)
+void addBracketsAndSemicolons(FILE *fcpp, int indentCurr, int indentBlockDepth, int *indentPrev)
 {
     int err = _addBracketsAndSemicolons(fcpp, indentCurr, indentBlockDepth, indentPrev);
 

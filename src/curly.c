@@ -1,21 +1,16 @@
 #include "curly.h"
 
-int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev)
+int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, int *indentPrev)
 {
     // TODO Fail if nullptrs
     if (indentCurr != 0)
     {
-        if (*indentBlockDepth == 0)
-        {
-            *indentBlockDepth = indentCurr;
-        }
-
-        if (indentCurr % *indentBlockDepth != 0)
+        if (indentCurr % indentBlockDepth != 0)
         {
 	    return 1;
         }
 
-        indentCurr /= *indentBlockDepth;
+	indentCurr /= indentBlockDepth;
     }
 
     int indentDiff = indentCurr - *indentPrev;
