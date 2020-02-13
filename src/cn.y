@@ -20,7 +20,7 @@ extern FILE *yyin;
 void yyerror(const char *s);
 
 // Required Globals
-// TODO Surely there's a nicer of getting things to yyparse? Check the docs.
+// TODO Surely there's a nicer of getting things to yyparse than making everything global? Check the docs.
 FILE *fcpp;
 FILE *fhpp;
 
@@ -28,10 +28,14 @@ int indentBlockDepth = 0;
 int indentPrev = 0;
 int indentFloor = 0;
 
+// TODO Lots of arbritrary constant values, could do with tweaking.
+char functionPrefixes[8][100];
+
 char prevExpr[100];
 
 // Function Definitions
 void addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, int *indentPrev);
+void handleClasses(char const *expr);
 int parse(char *finpath);
 
 %}
@@ -92,11 +96,7 @@ codeline:
                                     // TODO strcpy is not necessarily safe.
                                     strcpy(prevExpr, $1);
 
-                                    if (strncmp($1, "class", 5) == 0)
-                                    {
-                                        // Temporarily increment by only 1 until we know indent depth.
-                                        indentFloor += (indentBlockDepth) ? indentBlockDepth : 1;
-                                    }
+                                    handleClasses($1);
 
                                     $$ = $1;
                                 }
@@ -112,9 +112,18 @@ codeline:
                                         if (indentPrev == indentFloor)
                                         {
                                             // If move above floor, write previous and new expr to cpp.
-                                            // TODO If we need declaration to cpp, if in a class we need to add class name, and we need to remove default values etc.
-                                            //      This will probably require a sub-parser for top level declarations.
-                                            fprintf(fcpp, "%s\n", prevExpr); // TODO already printed a NL, move back one or delete it for gdb hack.
+
+                                            // TODO This is a 10 second hack to implement MVP, really we need a subparser for declarations.
+                                            char temp[100];
+                                            char *ident = strstr(prevExpr, "(");
+                                            do { --ident; } while (ident != prevExpr && *(ident-1) != ' ');
+                                            int const diff = ident - prevExpr;
+                                            strncpy(temp, prevExpr, diff);
+                                            temp[diff] = '\0';
+                                            strcat(temp, functionPrefixes[indentFloor / indentBlockDepth]);
+                                            strcat(temp, ident);
+
+                                            fprintf(fcpp, "%s\n", temp); // TODO already printed a NL, move back one or delete it for gdb hack.
                                         }
                                         addBracketsAndSemicolons(fcpp, $1, indentBlockDepth, &indentPrev);
                                         fprintf(fcpp, "%s", $2);
@@ -136,11 +145,7 @@ codeline:
                                     // TODO strcpy is not necessarily safe.
                                     strcpy(prevExpr, $2);
 
-                                    if (strncmp($2, "class", 5) == 0)
-                                    {
-                                        // TODO Spaces!
-                                        indentFloor += indentBlockDepth;
-                                    }
+                                    handleClasses($2);
 
                                     $$ = $2;
                                 }
@@ -151,6 +156,24 @@ line_indent:
 ;
 
 %%
+
+void handleClasses(char const *expr)
+{
+    if (strncmp(expr, "class ", 6) == 0)
+    {
+        indentFloor += (indentBlockDepth) ? indentBlockDepth : 1;
+
+        // TODO Works, but would be much prettier in subparser.
+        char const *temp = expr + 6; // Move ahead by strlen("class ")
+        char const *p = temp;
+        do { ++p; } while (*p != '\0' && *p != ' ');
+        int x = indentFloor;
+        if (indentBlockDepth) { x /= indentBlockDepth; }
+        strncpy(functionPrefixes[x], temp, p - temp);
+        functionPrefixes[x][p - temp + 1] = '\0';
+        strcat(functionPrefixes[x], "::");
+    }
+}
 
 int parse(char filepath[MAX_PATH])
 {

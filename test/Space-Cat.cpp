@@ -9,17 +9,17 @@
 
 
 
-Cat(int age, int legs = 4)
+Cat::Cat(int age, int legs = 4)
 {this->age = age
 ;this->legs = legs
 
 ;};
-void speak(int x)
+void Cat::speak(int x)
 {for (int i = 0; i < x; i++)
 {std::cout << "meow\n"
 
 ;};};
-int getAge()
+int Cat::getAge()
 {return this->age
 
 ;};
