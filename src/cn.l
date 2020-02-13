@@ -7,7 +7,12 @@
 
 #include "y.tab.h"
 
+// #define USER_INPUT_ACTION yylloc.first_line = yylloc.last_line = yylineno;
+// ^^ if you wanted to implement first_line, first_column, last_line, last_column. uses YYLTYPE
+
 %}
+
+%option yylineno
 
 %%
 
@@ -17,8 +22,9 @@
 [ \t]           {
                     return INDENT;
                 }
-\n              {
-                    return NL;
+\n              { 
+                    ++yylineno; // Increments line number
+		    return NL;
                 }
 #.+             {
                     yylval.sval = strdup(yytext); // Will be free()d by bison.

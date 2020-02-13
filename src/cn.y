@@ -7,12 +7,20 @@
 #include "curly.h"
 
 // TODO This feels clumsy. How do others do this?
-#define MAX_PATH 4096
+// #define MAX_PATH 4096
+
+#include <limits.h>
+MAX_PATH = 4096;
+// does thrown a warning. another way of setting it, another is PATH_MAX, however online advised against it
+// MAX_PATH is within limits.h
 
 // Flex Definitions
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
+
+//declared in cn.l
+extern int yylineno;
 
 void yyerror(const char *s);
 
@@ -115,24 +123,7 @@ void addBracketsAndSemicolons(FILE *fout, int indentCurr, int *indentBlockDepth,
     }
 }
 
-int main(int argc, char **argv)
-{
-    if (argc == 1)
-    {
-        fprintf(stderr, "No files provided.\n");
-        exit(1);
-    }
-
-    for (int i = 1; i < argc; ++i)
-    {
-        if (parse(argv[i]))
-        {
-            fprintf(stderr, "Error writing to file %s\n", argv[i]);
-        }
-    }
-}
-
 void yyerror(const char *s) {
-    fprintf(stderr, "Parse error: %s\n", s);
+    fprintf(stderr, "(Line: %d) Parsing error: %s", yylineno, s);
     exit(1);
 }
