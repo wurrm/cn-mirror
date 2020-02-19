@@ -15,7 +15,7 @@ extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
 
-//declared in cn.l
+// Declared in cn.l
 extern int yylineno;
 
 void yyerror(const char *s);
@@ -224,6 +224,6 @@ void addBracketsAndSemicolons(FILE *fcpp, int indentCurr, int indentBlockDepth, 
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "(Line: %d) Parsing error: %s", yylineno, s);
+    fprintf(stderr, "(Line: %d) Parsing error: %s\n", yylineno, s);
     exit(1);
 }

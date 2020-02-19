@@ -23,7 +23,6 @@
                     return INDENT;
                 }
 \n              { 
-                    ++yylineno; // Increments line number
 		    return NL;
                 }
 #.+             {
