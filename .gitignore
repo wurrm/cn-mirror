@@ -2,3 +2,5 @@ build
 spike
 brief
 bin/*
+test/tests/cnc/*
+test/tests/pycn/*
