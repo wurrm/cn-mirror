@@ -1,6 +1,0 @@
-#include <iostream>
-
-int age = 420
-
-int main()
-    std::cout << "hello world! i am " << age << " years old!" << std::endl
