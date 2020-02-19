@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h> // For MAX_PATH
+#include <limits.h> // For PATH_MAX (TODO What about Windows?)
 #include <stdbool.h>
 
 #include <libgen.h>
@@ -176,7 +176,7 @@ void handleClasses(char const *expr)
     }
 }
 
-int parse(char filepath[MAX_PATH])
+int parse(char filepath[PATH_MAX])
 {
 
     FILE *fin = fopen(filepath, "r");
