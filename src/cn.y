@@ -3,16 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h> // For MAX_PATH
 
 #include "curly.h"
-
-// TODO This feels clumsy. How do others do this?
-// #define MAX_PATH 4096
-
-#include <limits.h>
-MAX_PATH = 4096;
-// does thrown a warning. another way of setting it, another is PATH_MAX, however online advised against it
-// MAX_PATH is within limits.h
 
 // Flex Definitions
 extern int yylex();
