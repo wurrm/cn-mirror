@@ -22,8 +22,8 @@
 [ \t]           {
                     return INDENT;
                 }
-\n              { 
-		    return NL;
+\n              {
+                    return NL;
                 }
 #.+             {
                     yylval.sval = strdup(yytext); // Will be free()d by bison.
