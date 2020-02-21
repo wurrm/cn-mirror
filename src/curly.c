@@ -28,13 +28,6 @@ int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, 
 	fprintf(fout, ";");
     }
 
-    // just an idea
-    // use strstr. for example const char class = 'class', and char / const char 'input'. pch = strstr(input, class)   
-    // if (pch) {}	prints no ;
-    
-    // if that does not work, I found a link where someone created a semicolon compiler. it dictates that 
-
-
     if (indentDiff < 0)
     {
         for (int i = 0; i < -indentDiff; ++i)
