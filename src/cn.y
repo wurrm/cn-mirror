@@ -3,19 +3,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h> // For PATH_MAX (TODO What about Windows?)
 #include <stdbool.h>
 
 #include <libgen.h>
 
 #include "curly.h"
 
-// TODO This feels clumsy. How do others do this?
-#define MAX_PATH 4096
-
 // Flex Definitions
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
+
+// Declared in cn.l
+extern int yylineno;
 
 void yyerror(const char *s);
 
@@ -175,7 +176,7 @@ void handleClasses(char const *expr)
     }
 }
 
-int parse(char filepath[MAX_PATH])
+int parse(char filepath[PATH_MAX])
 {
 
     FILE *fin = fopen(filepath, "r");
@@ -222,24 +223,7 @@ void addBracketsAndSemicolons(FILE *fcpp, int indentCurr, int indentBlockDepth, 
     }
 }
 
-int main(int argc, char **argv)
-{
-    if (argc == 1)
-    {
-        fprintf(stderr, "No files provided.\n");
-        exit(1);
-    }
-
-    for (int i = 1; i < argc; ++i)
-    {
-        if (parse(argv[i]))
-        {
-            fprintf(stderr, "Error writing to file %s\n", argv[i]);
-        }
-    }
-}
-
 void yyerror(const char *s) {
-    fprintf(stderr, "Parse error: %s\n", s);
+    fprintf(stderr, "(Line: %d) Parsing error: %s\n", yylineno, s);
     exit(1);
 }
