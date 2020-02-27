@@ -1,26 +1,20 @@
 #include "curly.h"
 
-void addBrackets(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev)
+int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, int *indentPrev)
 {
+    int tempPrev = (indentBlockDepth) ? *indentPrev / indentBlockDepth : 0;
+    int tempCurr = (indentBlockDepth) ? indentCurr / indentBlockDepth : 0;
+
     // TODO Fail if nullptrs
     if (indentCurr != 0)
     {
-        if (*indentBlockDepth == 0)
+        if (indentCurr % indentBlockDepth != 0)
         {
-            *indentBlockDepth = indentCurr;
+	    return 1;
         }
-
-        if (indentCurr % *indentBlockDepth != 0)
-        {
-            // TODO Good error message.
-            // Perhaps now is a good time to start counting lns too?
-            yyerror("Bad indentation");
-        }
-
-        indentCurr /= *indentBlockDepth;
     }
 
-    int indentDiff = indentCurr - *indentPrev;
+    int indentDiff = tempCurr - tempPrev;
 
     if (indentDiff > 0)
     {
@@ -29,7 +23,12 @@ void addBrackets(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentP
             fprintf(fout, "{");
         }
     }
-    else if (indentDiff < 0)
+    else
+    {
+	fprintf(fout, ";");
+    }
+
+    if (indentDiff < 0)
     {
         for (int i = 0; i < -indentDiff; ++i)
         {
@@ -38,4 +37,6 @@ void addBrackets(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentP
     }
 
     *indentPrev = indentCurr;
+
+    return 0;
 }

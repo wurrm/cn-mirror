@@ -2,5 +2,5 @@
 #define CURLY_H
 #include <stdio.h>
 
-void addBrackets(FILE *fout, int indentCurr, int *indentBlockDepth, int *indentPrev);
+int _addBracketsAndSemicolons(FILE *fout, int indentCurr, int indentBlockDepth, int *indentPrev);
 #endif

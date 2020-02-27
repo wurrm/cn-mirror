@@ -7,7 +7,12 @@
 
 #include "y.tab.h"
 
+// #define USER_INPUT_ACTION yylloc.first_line = yylloc.last_line = yylineno;
+// ^^ if you wanted to implement first_line, first_column, last_line, last_column. uses YYLTYPE
+
 %}
+
+%option yylineno
 
 %%
 
@@ -20,9 +25,13 @@
 \n              {
                     return NL;
                 }
-[A-Za-z#\/].+   { // This regex is a temporary simplification.
+#.+             {
                     yylval.sval = strdup(yytext); // Will be free()d by bison.
-                    return STATEMENT;
+                    return MACRO;
+                }
+[A-Za-z\/].+    { // This regex is a temporary simplification.
+                    yylval.sval = strdup(yytext); // Will be free()d by bison.
+                    return EXPR;
                 }
 
 %%
